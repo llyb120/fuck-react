@@ -154,8 +154,8 @@ export function provide(key, value) {
 export function want(key, fallback) {
   const owner = currentOwner;
   if (!owner) {
-    console.warn('inject() must be called inside a component setup.');
-    return fallback;
+    // console.warn('inject() must be called inside a component setup.');
+    return fallback();
   }
 
   // 沿 parent 链向上查找
@@ -168,7 +168,7 @@ export function want(key, fallback) {
   }
 
   // 没找到，返回 fallback
-  return fallback;
+  return fallback();
 }
 
 // ============================================================
