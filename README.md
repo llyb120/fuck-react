@@ -1,20 +1,17 @@
 # Kra - Kick React's Ass
 
-基于细粒度响应式的 React 状态管理库。使用 Signal 作为状态原语，通过自动依赖追踪实现按需更新，无需手动管理依赖数组。
+- 基于细粒度响应式的 React 状态管理库。
+- 使用 Signal 作为状态原语，通过自动依赖追踪实现按需更新，无需手动管理依赖数组。
+- 将开发流程还原为观察者模式，无需担心hook引入的心智负担
 
 ## 特性
 
 - **细粒度更新**：状态变化直接触发依赖该状态的组件重新渲染
 - **自动依赖追踪**：无需手动声明依赖数组
 - **零学习成本**：API 简洁直观，与 React 生态无缝集成
-- **类型安全**：完整 TypeScript 支持
 - **轻量级**：核心代码不足 300 行
 
 ## 安装
-
-```bash
-npm install kra
-```
 
 或直接引入源文件：
 
@@ -27,7 +24,7 @@ import { signal, component, createEffect } from './kra.js';
 ```jsx
 import { signal, component } from 'kra';
 
-const Counter = component(function Counter() {
+const Counter = component(() => {
   const count = signal(0);
 
   return () => (
@@ -85,7 +82,7 @@ count.peek(); // 读取值但不建立追踪
 #### Setup + Render 模式（推荐）
 
 ```jsx
-const Counter = component(function Counter() {
+const Counter = component(() => {
   // Setup 阶段：仅执行一次
   const count = signal(0);
 
@@ -105,7 +102,7 @@ const Counter = component(function Counter() {
 #### 简化模式
 
 ```jsx
-const Counter = component(function Counter() {
+const Counter = component(() => {
   const count = signal(0);
   return <button onClick={() => count(c => c + 1)}>{count()}</button>;
 });
@@ -116,7 +113,7 @@ const Counter = component(function Counter() {
 `createEffect` 创建自动追踪依赖的副作用：
 
 ```jsx
-const UserProfile = component(function UserProfile() {
+const UserProfile = component(() => {
   const userId = signal(1);
   const userData = signal(null);
 
@@ -171,12 +168,12 @@ const result = createComputed(() => {
 export const theme = signal('light');
 
 // components/Header.jsx
-export const Header = component(function Header() {
+export const Header = component(() => {
   return () => <h1 style={{ color: theme() === 'dark' ? '#fff' : '#000' }}>Header</h1>;
 });
 
 // components/Toggle.jsx
-export const Toggle = component(function Toggle() {
+export const Toggle = component(() => {
   return () => (
     <button onClick={() => theme(t => t === 'light' ? 'dark' : 'light')}>
       Toggle Theme
@@ -209,14 +206,14 @@ const updateProfile = () => {
 数据流动方向永远是 祖辈 -> 孙辈
 
 ```jsx
-const Parent = component(function Parent() {
+const Parent = component(() => {
   const config = signal({ theme: 'dark' });
   share('config', config);
 
   return () => <Child />;
 });
 
-const GrandChild = component(function GrandChild() {
+const GrandChild = component(() => {
   const config = want('config');
   return () => <div>Theme: {config().theme}</div>;
 });
@@ -227,7 +224,7 @@ const GrandChild = component(function GrandChild() {
 使用 `onCleanup` 注册组件卸载时的清理逻辑：
 
 ```jsx
-const Timer = component(function Timer() {
+const Timer = component(() => {
   const seconds = signal(0);
   const timerId = setInterval(() => seconds(s => s + 1), 1000);
 
@@ -242,7 +239,7 @@ const Timer = component(function Timer() {
 Props 作为普通参数传递，在渲染函数中使用：
 
 ```jsx
-const Button = component(function Button(props) {
+const Button = component(props => {
   const count = signal(0);
 
   return () => (
